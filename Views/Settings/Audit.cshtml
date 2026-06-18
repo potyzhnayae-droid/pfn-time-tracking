@@ -1,0 +1,36 @@
+@model List<AuditLog>
+@{
+    ViewData["Title"] = "Журнал действий";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="table-responsive table-pfn">
+    <table class="table table-sm mb-0">
+        <thead>
+            <tr>
+                <th>Время (UTC)</th>
+                <th>Пользователь</th>
+                <th>Действие</th>
+                <th>Сущность</th>
+                <th>Id</th>
+                <th>Детали</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>@a.Timestamp.ToString("u")</td>
+                <td>@a.UserName</td>
+                <td>@a.Action</td>
+                <td>@a.EntityType</td>
+                <td>@a.EntityId</td>
+                <td class="small">@a.Details</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<a asp-action="Index" class="btn btn-outline-secondary rounded-3 mt-3">Назад</a>

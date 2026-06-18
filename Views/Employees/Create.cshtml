@@ -1,0 +1,41 @@
+@model EmployeeFormViewModel
+@{
+    ViewData["Title"] = "Новый сотрудник";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="pfn-card p-4" style="max-width:640px">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <input asp-for="FullName" class="form-control" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="DepartmentId" class="form-label"></label>
+            <select asp-for="DepartmentId" asp-items="Model.Departments" class="form-select"></select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Position" class="form-label"></label>
+            <input asp-for="Position" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="WorkScheduleType" class="form-label"></label>
+            <select asp-for="WorkScheduleType" class="form-select" asp-items="Html.GetEnumSelectList<WorkScheduleType>()"></select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="HourlyRate" class="form-label"></label>
+            <input asp-for="HourlyRate" class="form-control" />
+            <span asp-validation-for="HourlyRate" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-pfn">Сохранить</button>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-3 ms-2">Отмена</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

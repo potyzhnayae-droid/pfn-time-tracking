@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pfn-time-tracking
+    runtime: docker
+    plan: free
+    region: frankfurt
+    healthCheckPath: /
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DatabaseIntegration__SeedDemoData
+        value: "true"

@@ -1,0 +1,8 @@
+bin/
+obj/
+.vs/
+*.user
+app.db
+Data/pfn.db
+*.db-shm
+*.db-wal

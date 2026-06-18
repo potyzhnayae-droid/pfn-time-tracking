@@ -1,0 +1,49 @@
+@model List<CorrectionRequest>
+@{
+    ViewData["Title"] = "Заявки на корректировку табеля";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">@ViewData["Title"]</h1>
+    @if (User.IsInRole(AppRoles.Employee))
+    {
+        <a class="btn btn-pfn" asp-action="Create">Новая заявка</a>
+    }
+</div>
+
+<div class="table-responsive table-pfn">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Сотрудник</th>
+                <th>Сообщение</th>
+                <th>Создана</th>
+                <th>Статус</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.WorkDate.ToString("dd.MM.yyyy")</td>
+                <td>@r.Employee?.FullName</td>
+                <td>@r.Message</td>
+                <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
+                <td>@(r.IsResolved ? "Закрыта" : "Новая")</td>
+                <td>
+                    @if (!r.IsResolved && (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.HR) || User.IsInRole(AppRoles.DepartmentHead)))
+                    {
+                        <form asp-action="Resolve" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-sm btn-gradient">Закрыть</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

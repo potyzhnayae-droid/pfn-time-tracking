@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Импорт справочников";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="pfn-card p-4" style="max-width:520px">
+    <form asp-action="ImportDirectories" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">Файл Excel (листы Departments и Employees)</label>
+            <input type="file" name="file" class="form-control" accept=".xlsx" required />
+        </div>
+        <button type="submit" class="btn btn-pfn">Импортировать</button>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-3 ms-2">Назад</a>
+    </form>
+</div>

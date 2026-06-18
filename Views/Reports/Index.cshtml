@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Отчёты";
+    var y = DateTime.Now.Year;
+    var m = DateTime.Now.Month;
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Табель Т-13 (Excel)</h2>
+            <form method="get" asp-action="T13" class="row g-2 mt-2">
+                <div class="col-4"><input type="number" name="year" value="@y" class="form-control" /></div>
+                <div class="col-4"><input type="number" name="month" value="@m" class="form-control" /></div>
+                <div class="col-12">
+                    <select name="departmentId" class="form-select" asp-items="ViewBag.Departments">
+                        <option value="">Все отделы</option>
+                    </select>
+                </div>
+                <div class="col-12"><button type="submit" class="btn btn-pfn">Скачать</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Дисциплина (Excel)</h2>
+            <form method="get" asp-action="Discipline" class="row g-2 mt-2">
+                <div class="col-4"><input type="number" name="year" value="@y" class="form-control" /></div>
+                <div class="col-4"><input type="number" name="month" value="@m" class="form-control" /></div>
+                <div class="col-12">
+                    <select name="departmentId" class="form-select" asp-items="ViewBag.Departments">
+                        <option value="">Все отделы</option>
+                    </select>
+                </div>
+                <div class="col-12"><button type="submit" class="btn btn-pfn">Скачать</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Свод по отделам</h2>
+            <form method="get" asp-action="DepartmentSummary" class="row g-2 mt-2">
+                <div class="col-4"><input type="number" name="year" value="@y" class="form-control" /></div>
+                <div class="col-4"><input type="number" name="month" value="@m" class="form-control" /></div>
+                <div class="col-12"><button type="submit" class="btn btn-pfn">Скачать Excel</button></div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Расчётный листок</h2>
+            <form method="get" asp-action="Payslip" class="row g-2 mt-2">
+                <div class="col-12">
+                    <select name="employeeId" class="form-select" asp-items="ViewBag.Employees" required></select>
+                </div>
+                <div class="col-4"><input type="number" name="year" value="@y" class="form-control" /></div>
+                <div class="col-4"><input type="number" name="month" value="@m" class="form-control" /></div>
+                <div class="col-12"><button type="submit" class="btn btn-gradient">Скачать Excel</button></div>
+            </form>
+        </div>
+    </div>
+</div>

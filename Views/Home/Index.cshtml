@@ -1,0 +1,102 @@
+﻿@model DashboardViewModel
+@{
+    ViewData["Title"] = "Главная панель";
+    var chartLabels = System.Text.Json.JsonSerializer.Serialize(Model.ChartPoints.Select(p => p.Label));
+    var chartData = System.Text.Json.JsonSerializer.Serialize(Model.ChartPoints.Select(p => p.Hours));
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="mb-1">Здравствуйте, @Model.UserDisplayName</h1>
+        <p class="mb-0 text-purple">Роль: <span class="badge-soft px-2 py-1 rounded-pill">@Model.RoleDisplay</span></p>
+        <p class="small text-muted mt-2 mb-0">Статистика за @Model.Month.ToString("00").@Model.Year</p>
+    </div>
+    @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.Accountant) || User.IsInRole(AppRoles.HR) || User.IsInRole(AppRoles.DepartmentHead))
+    {
+        <form method="get" class="pfn-card p-3 d-flex flex-wrap gap-2 align-items-end">
+            <div>
+                <label class="form-label small mb-0">Отдел</label>
+                <select name="departmentId" class="form-select form-select-sm" asp-items="ViewBag.FilterDepartments"></select>
+            </div>
+            <div>
+                <label class="form-label small mb-0">Сотрудник</label>
+                <select name="employeeId" class="form-select form-select-sm" asp-items="ViewBag.FilterEmployees"></select>
+            </div>
+            <button type="submit" class="btn btn-pfn btn-sm">Применить</button>
+        </form>
+    }
+</div>
+
+@if (Model.ComplianceWarnings.Any())
+{
+    <div class="mb-4">
+        @foreach (var w in Model.ComplianceWarnings)
+        {
+            var cls = w.Severity == "danger" ? "danger" : "warning";
+            <div class="alert alert-@cls rounded-3">@w.Message</div>
+        }
+    </div>
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="pfn-stat h-100">
+            <p class="small text-uppercase mb-1">Отработано часов</p>
+            <h3>@Model.TotalWorkedHours</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="pfn-stat h-100">
+            <p class="small text-uppercase mb-1">Опоздания (&gt;15 мин)</p>
+            <h3>@Model.LateCount</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="pfn-stat h-100">
+            <p class="small text-uppercase mb-1">Сверхурочные</p>
+            <h3>@Model.TotalOvertimeHours</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="pfn-stat h-100">
+            <p class="small text-uppercase mb-1">Ночные часы</p>
+            <h3>@Model.TotalNightHours</h3>
+        </div>
+    </div>
+</div>
+
+<div class="pfn-card p-4">
+    <h2 class="h5 mb-3">Отработанные часы по дням</h2>
+    <canvas id="hoursChart" height="100"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        const ctx = document.getElementById('hoursChart');
+        const labels = @Html.Raw(chartLabels);
+        const data = @Html.Raw(chartData);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Часы',
+                    data,
+                    borderColor: '#9333EA',
+                    backgroundColor: 'rgba(147, 51, 234, 0.15)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#ead6ff' } },
+                    x: { grid: { color: '#f3e8ff' } }
+                }
+            }
+        });
+    </script>
+}

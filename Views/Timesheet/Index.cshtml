@@ -1,0 +1,135 @@
+@model TimesheetViewModel
+@{
+    ViewData["Title"] = "Табель учёта рабочего времени";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<form method="get" class="pfn-card p-3 mb-4 row g-2 align-items-end">
+    <div class="col-md-2">
+        <label class="form-label small mb-0">Год</label>
+        <input type="number" name="year" value="@Model.Year" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label small mb-0">Месяц</label>
+        <input type="number" name="month" value="@Model.Month" min="1" max="12" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label small mb-0">Отдел</label>
+        <select name="departmentId" class="form-select" asp-items="Model.Departments">
+            <option value="">—</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label small mb-0">Сотрудник</label>
+        <select name="employeeId" class="form-select" asp-items="Model.Employees">
+            <option value="">—</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-pfn w-100">Показать</button>
+    </div>
+</form>
+
+@if (Model.EmployeeId is int empId && Model.Days.Any())
+{
+    <form asp-action="Save" method="post" class="mb-3" id="timesheetForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="employeeId" value="@empId" />
+        <input type="hidden" name="year" value="@Model.Year" />
+        <input type="hidden" name="month" value="@Model.Month" />
+
+        <div class="table-responsive table-pfn mb-3">
+            <table class="table table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Приход</th>
+                        <th>Уход</th>
+                        <th>Обед (мин)</th>
+                        <th>Неявка</th>
+                        <th>Причина</th>
+                        <th>Часы</th>
+                        <th>Ночь</th>
+                        <th>Сверхур.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for (var idx = 0; idx < Model.Days.Count; idx++)
+                {
+                    var d = Model.Days[idx];
+                    <tr>
+                        <td>
+                            @d.Date.ToString("dd.MM ddd")
+                            <input type="hidden" name="days[@idx].WorkDayId" value="@d.WorkDayId" />
+                            <input type="hidden" name="days[@idx].Date" value="@d.Date.ToString("yyyy-MM-dd")" />
+                        </td>
+                        <td style="min-width:110px">
+                            <input type="time" name="days[@idx].StartTime" value="@d.StartTime?.ToString(@"hh\:mm")" class="form-control form-control-sm js-time" />
+                        </td>
+                        <td style="min-width:110px">
+                            <input type="time" name="days[@idx].EndTime" value="@d.EndTime?.ToString(@"hh\:mm")" class="form-control form-control-sm js-time" />
+                        </td>
+                        <td>
+                            <input type="number" name="days[@idx].LunchBreakMinutes" value="@d.LunchBreakMinutes" class="form-control form-control-sm" style="width:72px" />
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" name="days[@idx].IsAbsent" value="true" class="form-check-input js-absent" @(d.IsAbsent ? "checked" : "") />
+                        </td>
+                        <td>
+                            <input type="text" name="days[@idx].AbsenceReason" value="@d.AbsenceReason" class="form-control form-control-sm" />
+                        </td>
+                        <td>@d.WorkedHours.ToString("0.##")</td>
+                        <td>@d.NightHours.ToString("0.##")</td>
+                        <td>@d.OvertimeHours.ToString("0.##")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.CanEdit)
+        {
+            <button type="submit" class="btn btn-pfn">Сохранить табель</button>
+        }
+    </form>
+
+    @if (Model.CanEdit)
+    {
+        <form asp-action="CopyPreviousMonth" method="post" class="d-inline" onsubmit="return confirm('Скопировать записи с предыдущего месяца? Существующие дни будут перезаписаны.');">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="employeeId" value="@empId" />
+            <input type="hidden" name="year" value="@Model.Year" />
+            <input type="hidden" name="month" value="@Model.Month" />
+            <button type="submit" class="btn btn-gradient">Копировать прошлый месяц</button>
+        </form>
+    }
+}
+else if (Model.EmployeeId is null)
+{
+    <p class="text-muted">Выберите сотрудника и нажмите «Показать».</p>
+}
+
+@section Scripts {
+    <script>
+        function syncAbsent(row) {
+            const cb = row.querySelector('.js-absent');
+            const on = cb && cb.checked;
+            row.querySelectorAll('.js-time').forEach(i => {
+                i.disabled = on;
+                if (on) i.value = '';
+            });
+        }
+        document.querySelectorAll('#timesheetForm tbody tr').forEach(row => {
+            const cb = row.querySelector('.js-absent');
+            if (cb) {
+                cb.addEventListener('change', () => syncAbsent(row));
+                syncAbsent(row);
+            }
+        });
+        const f = document.getElementById('timesheetForm');
+        if (f) f.addEventListener('submit', () => {
+            f.querySelectorAll('input[disabled]').forEach(i => i.disabled = false);
+        });
+    </script>
+}

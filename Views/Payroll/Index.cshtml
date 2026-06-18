@@ -1,0 +1,61 @@
+@model IReadOnlyList<PayrollLine>
+@{
+    ViewData["Title"] = "Расчёт заработной платы";
+    var y = (int)ViewBag.Year;
+    var m = (int)ViewBag.Month;
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<form method="get" class="pfn-card p-3 mb-4 row g-2 align-items-end">
+    <div class="col-md-2">
+        <label class="form-label small mb-0">Год</label>
+        <input type="number" name="year" value="@y" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label small mb-0">Месяц</label>
+        <input type="number" name="month" value="@m" min="1" max="12" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label small mb-0">Отдел</label>
+        <select name="departmentId" class="form-select" asp-items="ViewBag.Departments">
+            <option value="">Все</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-pfn w-100">Рассчитать</button>
+    </div>
+    <div class="col-md-2">
+        <a class="btn btn-gradient w-100" asp-action="Export" asp-route-year="@y" asp-route-month="@m" asp-route-departmentId="@ViewBag.SelectedDepartmentId">Excel</a>
+    </div>
+</form>
+
+<div class="table-responsive table-pfn">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Отдел</th>
+                <th>Обычные ч.</th>
+                <th>Ночные</th>
+                <th>Сверхур.</th>
+                <th>Праздн.</th>
+                <th>Сумма, ₽</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var line in Model)
+        {
+            <tr>
+                <td>@line.FullName</td>
+                <td>@line.Department</td>
+                <td>@line.RegularHours</td>
+                <td>@line.NightHours</td>
+                <td>@line.OvertimeHours</td>
+                <td>@line.HolidayHours</td>
+                <td><strong>@line.Amount</strong></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

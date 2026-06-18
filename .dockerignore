@@ -1,0 +1,11 @@
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.user
+**/app.db
+**/Data/pfn.db
+**/.git
+**/.gitignore
+**/Dockerfile
+**/.dockerignore

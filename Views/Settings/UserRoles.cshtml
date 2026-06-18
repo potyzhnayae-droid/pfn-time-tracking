@@ -1,0 +1,55 @@
+@model List<UserRoleRow>
+@{
+    ViewData["Title"] = "Роли пользователей";
+    var allRoles = (List<string>)ViewBag.AllRoles!;
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="table-responsive table-pfn">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Пользователь</th>
+                @foreach (var role in allRoles)
+                {
+                    <th class="text-center small">@AppRoles.ToRussian(role)</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>
+                    <div class="fw-semibold">@u.DisplayName</div>
+                    <div class="small text-muted">@u.Email</div>
+                </td>
+                @foreach (var role in allRoles)
+                {
+                    var has = u.Roles.Contains(role);
+                    <td class="text-center">
+                        <form asp-action="SetRole" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@u.UserId" />
+                            <input type="hidden" name="role" value="@role" />
+                            <input type="hidden" name="add" value="@(has ? "false" : "true")" />
+                            @if (has)
+                            {
+                                <button type="submit" class="btn btn-sm btn-success rounded-3" title="Снять">✓</button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3" title="Назначить">+</button>
+                            }
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<p class="small text-muted mt-3">Нажмите «✓», чтобы снять роль, «+» — чтобы назначить.</p>
+<a asp-action="Index" class="btn btn-outline-secondary rounded-3">Назад</a>

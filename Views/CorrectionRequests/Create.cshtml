@@ -1,0 +1,28 @@
+@model CorrectionRequest
+@{
+    ViewData["Title"] = "Заявка на корректировку";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="pfn-card p-4" style="max-width:720px">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="EmployeeId" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="WorkDate" class="form-label">Дата в табеле</label>
+            <input asp-for="WorkDate" type="date" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Message" class="form-label">Текст обращения</label>
+            <textarea asp-for="Message" class="form-control" rows="4"></textarea>
+        </div>
+        <button type="submit" class="btn btn-pfn">Отправить</button>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-3 ms-2">Назад</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

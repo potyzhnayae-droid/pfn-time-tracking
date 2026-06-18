@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Резервное копирование";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="pfn-card p-4" style="max-width:560px">
+    <p>Для <strong>SQLite</strong> создаётся резервная копия файла базы в <code>App_Data/backups</code>.</p>
+    <p class="small text-muted">Если позже переключите проект на SQL Server, для провайдера SQL будет использоваться команда <code>BACKUP DATABASE</code>.</p>
+    <form asp-action="RunBackup" method="post" onsubmit="return confirm('Создать резервную копию?');">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-pfn">Выполнить копирование</button>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-3 ms-2">Назад</a>
+    </form>
+</div>

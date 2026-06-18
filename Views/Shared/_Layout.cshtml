@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Учёт рабочего времени ПФР</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header class="pfn-nav shadow-sm mb-4">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid px-4">
+                <a class="navbar-brand fw-bold text-heading" asp-controller="Home" asp-action="Index">ПФР · Табель</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-lg-1">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Главная панель</a>
+                            </li>
+                            @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.HR))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Employees" asp-action="Index">Сотрудники</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Timesheet" asp-action="Index">Табель учёта</a>
+                            </li>
+                            @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.DepartmentHead)
+                                || User.IsInRole(AppRoles.HR) || User.IsInRole(AppRoles.Accountant))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Отчёты</a>
+                                    <ul class="dropdown-menu rounded-3 border-accent shadow-sm">
+                                        <li><a class="dropdown-item" asp-controller="Reports" asp-action="Index">Формы отчётов</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.Accountant))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Payroll" asp-action="Index">Расчёт зарплаты</a>
+                                </li>
+                            }
+                            @if (User.IsInRole(AppRoles.Administrator) || User.IsInRole(AppRoles.HR))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Настройки</a>
+                                    <ul class="dropdown-menu rounded-3 border-accent shadow-sm">
+                                        <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Обзор</a></li>
+                                        @if (User.IsInRole(AppRoles.Administrator))
+                                        {
+                                            <li><a class="dropdown-item" asp-controller="Settings" asp-action="UserRoles">Роли пользователей</a></li>
+                                            <li><a class="dropdown-item" asp-controller="Settings" asp-action="Audit">Журнал действий</a></li>
+                                            <li><a class="dropdown-item" asp-controller="Settings" asp-action="Backup">Резервное копирование</a></li>
+                                        }
+                                        <li><a class="dropdown-item" asp-controller="Settings" asp-action="ExportDirectories">Экспорт справочников</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Settings" asp-action="ImportDirectories">Импорт справочников</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="CorrectionRequests" asp-action="Index">Заявки на корректировку</a>
+                            </li>
+                        </ul>
+                    }
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="flex-grow-1 px-4 pb-5">
+        <div class="container-fluid max-w-1400">
+            @if (TempData["Ok"] is string ok)
+            {
+                <div class="alert alert-success pfn-alert rounded-3 border-0 shadow-sm">@ok</div>
+            }
+            @RenderBody()
+        </div>
+    </main>
+    <footer class="pfn-footer mt-auto py-3">
+        <div class="container-fluid px-4 text-center small text-muted">
+            Учёт рабочего времени · дипломный проект · @DateTime.Now.Year
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

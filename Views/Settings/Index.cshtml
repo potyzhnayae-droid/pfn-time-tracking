@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Настройки";
+}
+
+<h1 class="mb-4">@ViewData["Title"]</h1>
+
+<div class="row g-3">
+    @if (User.IsInRole(AppRoles.Administrator))
+    {
+        <div class="col-md-6">
+            <div class="pfn-card p-4 h-100">
+                <h2 class="h5">Роли и пользователи</h2>
+                <p class="small text-muted">Назначение ролей ASP.NET Identity.</p>
+                <a class="btn btn-pfn" asp-action="UserRoles">Открыть</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="pfn-card p-4 h-100">
+                <h2 class="h5">Журнал действий</h2>
+                <p class="small text-muted">Кто и когда изменял данные.</p>
+                <a class="btn btn-gradient" asp-action="Audit">Открыть</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="pfn-card p-4 h-100">
+                <h2 class="h5">Резервное копирование БД</h2>
+                <p class="small text-muted">Команда BACKUP для SQL Server.</p>
+                <a class="btn btn-gradient" asp-action="Backup">Открыть</a>
+            </div>
+        </div>
+    }
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Экспорт справочников</h2>
+            <p class="small text-muted">Отделы и сотрудники в Excel.</p>
+            <a class="btn btn-pfn" asp-action="ExportDirectories">Скачать</a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="pfn-card p-4 h-100">
+            <h2 class="h5">Импорт справочников</h2>
+            <p class="small text-muted">Формат как у экспорта.</p>
+            <a class="btn btn-outline-accent" asp-action="ImportDirectories">Загрузить</a>
+        </div>
+    </div>
+</div>
