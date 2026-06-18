@@ -1,0 +1,28 @@
+services:
+  pfn:
+    image: ghcr.io/potyzhnayae-droid/pfn-time-tracking:latest
+    container_name: pfn-time-tracking
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Data Source=/app/Data/pfn.db;Cache=Shared
+      DatabaseIntegration__SeedDemoData: "true"
+    volumes:
+      - pfn-data:/app/Data
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: pfn-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - pfn
+
+volumes:
+  pfn-data:
